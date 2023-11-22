@@ -1,18 +1,21 @@
 import express from 'express';
 
-import {
-    getAllContacts,
-    // getContact, postContact, deleteContact, changeContact
-} from '../../controllers/ctrlContacts.js';
+import { isValidId } from '../../middlewares/isValidId.js';
+import { isEmptyBody } from '../../middlewares/isEmptyBody.js';
+import { validateBody } from '../../decorators/validateBody.js';
+
+import contactController from '../../controllers/ctrlContacts.js';
 
 export const router = express.Router()
 
-router.get('/', getAllContacts)
+router.get('/', contactController.getAllContacts)
 
-// router.get('/:contactId', getContact)
+router.get('/:contactId', isValidId, contactController.getContact)
 
-// router.post('/', postContact)
+router.post('/', validateBody(contactController.schema), contactController.postContact)
 
-// router.delete('/:contactId', deleteContact)
+router.delete('/:contactId', isValidId, contactController.deleteContact)
 
-// router.put('/:contactId', changeContact)
+router.put('/:contactId', isEmptyBody, validateBody(contactController.schema), isValidId, contactController.changeContact)
+
+router.patch('/:contactId/favorite', isValidId, validateBody(contactController.favoriteSchema), contactController.changeContact)

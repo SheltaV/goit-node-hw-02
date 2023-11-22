@@ -1,82 +1,62 @@
 import Joi from 'joi';
 
 import { Contact } from '../models/Contact.js';
-
-// import { httpError } from '../helpers/httpError.js';
-import {
-  listContacts,
-  // getContactById, removeContact, addContact, updateContact
-} from '../models/contacts.js';
+import { httpError } from '../helpers/httpError.js';
+import { ctrlWrapper } from '../decorators/ctrlWrapper.js';
 
 const schema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().required(),
   phone: Joi.string().required(),
+  favorite:Joi.boolean(),
 })
 
-export const getAllContacts = async (req, res, next) => {
-  try {
-    const result = await Contact.find()
+const favoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(),
+})
+
+const getAllContacts = async (req, res) => {
+  const result = await Contact.find()
   res.json(result)
-  } catch (error) {
-    next(error)
-  }
 }
 
-// export const getContact = async (req, res, next) => {
-//   try {
-//     const { contactId } = req.params;
-//     const result = await getContactById(contactId);
-//     if (!result) {
-//       throw httpError(404, 'Not Found')
-//     }
-//     res.json(result)
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+const getContact = async (req, res) => {
+    const { contactId } = req.params;
+    const result = await Contact.findById(contactId);
+    if (!result) {
+      throw httpError(404, 'Not Found')
+    }
+    res.json(result)
+}
 
-// export const postContact = async (req, res, next) => {
-//   try {
-//     const { error } = schema.validate(req.body);
-//       if (error) {
-//         throw httpError(400, 'Missing required name field')
-//     }
-//     const result = await addContact(req.body)
-//     res.status(201).json(result)
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+const postContact = async (req, res) => {
+    const result = await Contact.create(req.body)
+    res.status(201).json(result)
+}
 
-// export const deleteContact = async (req, res, next) => {
-//   try {
-//     const { contactId } = req.params;
-//     const result = await removeContact(contactId);
-//       if (!result) {
-//         throw httpError(404, 'Not found')
-//     }
-//     res.json({Message: "Contact deleted"})
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+const deleteContact = async (req, res) => {
+    const { contactId } = req.params;
+    const result = await Contact.findByIdAndDelete(contactId);
+      if (!result) {
+        throw httpError(404, 'Not found')
+    }
+    res.json({Message: "Contact deleted"})
+}
 
-// export const changeContact = async (req, res, next) => {
-//   try {
-//     const { error } = schema.validate(req.body);
-//       if (error) {
-//         throw httpError(400, 'Missing fields')
-//     }
-//     const { contactId } = req.params;
-//     const result = updateContact(contactId, req.body);
-//     if (!result) {
-//       const err = new Error;
-//       err.status = 404;
-//       throw err
-//     }
-//     res.json(result)
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+ const changeContact = async (req, res) => {
+    const { contactId } = req.params;
+    const result = await Contact.findByIdAndUpdate(contactId, req.body);
+    if (!result) {
+      throw httpError(404, `Movie with id=${id} not found`)
+    }
+    res.json(result)
+}
+
+export default {
+  schema, favoriteSchema,
+  getAllContacts: ctrlWrapper(getAllContacts),
+  getContact: ctrlWrapper(getContact),
+  postContact: ctrlWrapper(postContact),
+  deleteContact: ctrlWrapper(deleteContact),
+  changeContact: ctrlWrapper(changeContact),
+}
