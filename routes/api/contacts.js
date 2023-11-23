@@ -1,25 +1,21 @@
-const express = require('express')
+import express from 'express';
 
-const router = express.Router()
+import { isValidId } from '../../middlewares/isValidId.js';
+import { isEmptyBody } from '../../middlewares/isEmptyBody.js';
+import { validateBody } from '../../decorators/validateBody.js';
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+import contactController from '../../controllers/ctrlContacts.js';
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+export const router = express.Router()
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get('/', contactController.getAllContacts)
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get('/:contactId', isValidId, contactController.getContact)
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post('/', validateBody(contactController.schema), contactController.postContact)
 
-module.exports = router
+router.delete('/:contactId', isValidId, contactController.deleteContact)
+
+router.put('/:contactId', isEmptyBody, validateBody(contactController.schema), isValidId, contactController.changeContact)
+
+router.patch('/:contactId/favorite', isValidId, validateBody(contactController.favoriteSchema), contactController.changeContact)
