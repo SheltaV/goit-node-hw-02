@@ -24,4 +24,4 @@ contactSchema.pre('findOneAndUpdate', preUpdate)
 
 contactSchema.post('findOneAndUpdate', saveHandleError)
 
-export const Contact = model("contact", contactSchema)
+export const Contact = model("contact", contactSchema);
