@@ -2,11 +2,14 @@ import express from 'express';
 
 import { isValidId } from '../../middlewares/isValidId.js';
 import { isEmptyBody } from '../../middlewares/isEmptyBody.js';
+import authenticate from '../../middlewares/authenticate.js';
 import { validateBody } from '../../decorators/validateBody.js';
 
 import contactController from '../../controllers/ctrlContacts.js';
 
-export const router = express.Router()
+export const router = express.Router();
+
+router.use(authenticate)
 
 router.get('/', contactController.getAllContacts)
 

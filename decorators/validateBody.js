@@ -8,6 +8,5 @@ export const validateBody = schema => {
         }
         next();
     }
-
     return func;
 }

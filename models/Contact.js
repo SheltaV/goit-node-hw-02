@@ -15,7 +15,11 @@ const contactSchema = new Schema({
     favorite: {
       type: Boolean,
       default: false,
-    },
+  },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    }
 })
 
 contactSchema.post('save', saveHandleError)
@@ -24,4 +28,4 @@ contactSchema.pre('findOneAndUpdate', preUpdate)
 
 contactSchema.post('findOneAndUpdate', saveHandleError)
 
-export const Contact = model("contact", contactSchema)
+export const Contact = model("contact", contactSchema);
