@@ -1,8 +1,10 @@
 import Joi from 'joi';
+import fs from "fs/promises";
 
 import { Contact } from '../models/Contact.js';
 import { httpError } from '../helpers/httpError.js';
 import { ctrlWrapper } from '../decorators/ctrlWrapper.js';
+
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -37,8 +39,8 @@ const getContact = async (req, res) => {
 
 const postContact = async (req, res) => {
   const { _id: owner } = req.user;
-    const result = await Contact.create({...req.body, owner})
-    res.status(201).json(result)
+  const result = await Contact.create({ ...req.body, owner })
+  res.status(201).json(result)
 }
 
 const deleteContact = async (req, res) => {

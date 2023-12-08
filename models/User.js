@@ -19,7 +19,11 @@ const userSchema = new Schema({
         enum: ["starter", "pro", "business"],
         default: "starter"
     },
-    token: String
+    token: String,
+    avatarUrl: {
+    type: String,
+    required: true
+    }
 });
 
 userSchema.post('save', saveHandleError)
