@@ -10,7 +10,8 @@ import { User, emailRegex } from "../models/User.js";
 import { httpError } from '../helpers/httpError.js';
 import { ctrlWrapper } from '../decorators/ctrlWrapper.js';
 
-const { JWT_SECRET } = process.env;
+
+const { JWT_SECRET, BASE_URL } = process.env;
 
 const avatarsPath = path.resolve("public", "avatars");
 
@@ -36,9 +37,11 @@ const signUp = async (req, res) => {
         throw httpError(409, "Email in use")
     };
     const hashPassword = await bcrypt.hash(password, 10);
-    const avatarUrl = gravatar.url(email);
-    const newUser = await User.create({ ...req.body, password: hashPassword, avatarUrl });
 
+    const avatarUrl = gravatar.url(email);
+    const newUser = await User.create({
+        ...req.body, password: hashPassword, avatarUrl,
+    });
     res.status(201).json({
         user: {
     email: newUser.email,
@@ -53,6 +56,8 @@ const signIn = async (req, res) => {
     if (!user) {
         throw httpError(401, 'Email or password is wrong')
     }
+
+
     const passwordCompare = await bcrypt.compare(password, user.password)
     if (!passwordCompare) {
         throw httpError(401, 'Email or password is wrong')
@@ -94,8 +99,9 @@ const updateSubscription = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
     const { _id: owner } = req.user;
+    console.log(req.file)
     if (!req.file) {
-    throw httpError(401, "File is not defined")
+    throw httpError(400, "File is not defined")
     };
     const { path: uploaded, originalname } = req.file;
     const avatar = await Jimp.read(uploaded);
@@ -106,6 +112,8 @@ const updateAvatar = async (req, res) => {
     await fs.rename(uploaded, result);
 
     const avatarUrl = path.join("avatars", filename);
+
+    // await User.findByIdAndUpdate(owner, {avatar})
     res.json({
         avatarUrl
     });
