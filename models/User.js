@@ -23,7 +23,15 @@ const userSchema = new Schema({
     avatarUrl: {
     type: String,
     required: true
-    }
+    },
+    verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  },
 });
 
 userSchema.post('save', saveHandleError)
