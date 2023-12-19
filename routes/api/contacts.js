@@ -2,17 +2,20 @@ import express from 'express';
 
 import { isValidId } from '../../middlewares/isValidId.js';
 import { isEmptyBody } from '../../middlewares/isEmptyBody.js';
+import authenticate from '../../middlewares/authenticate.js';
+import { upload } from '../../middlewares/upload.js';
+import contactController from '../../controllers/ctrlContacts.js';
 import { validateBody } from '../../decorators/validateBody.js';
 
-import contactController from '../../controllers/ctrlContacts.js';
+export const router = express.Router();
 
-export const router = express.Router()
+router.use(authenticate)
 
 router.get('/', contactController.getAllContacts)
 
 router.get('/:contactId', isValidId, contactController.getContact)
 
-router.post('/', validateBody(contactController.schema), contactController.postContact)
+router.post('/', upload.single("avatar"), validateBody(contactController.schema), contactController.postContact)
 
 router.delete('/:contactId', isValidId, contactController.deleteContact)
 
